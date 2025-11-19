@@ -1,0 +1,37 @@
+# photodrop/docker-compose.yml
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "3001:3001"
+    volumes:
+      # Mount our entire backend folder to the container's app folder
+      - ./backend:/usr/src/app
+      # This is the magic fix: an anonymous volume that prevents our local
+      # node_modules from overwriting the one in the container.
+      - /usr/src/app/node_modules
+    # Use the 'dev' script for live-reloading
+    command: sh -c "npm install && npm run dev"
+    environment:
+      # This helps with file watching on some systems, including Windows
+      - CHOKIDAR_USEPOLLING=true
+
+  frontend:
+    build:
+      context: ./frontend
+      # Tell Docker to use our new development-specific Dockerfile
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    volumes:
+      # Mount our entire frontend folder
+      - ./frontend:/app
+      # Apply the same magic fix for the frontend's node_modules
+      - /app/node_modules
+    environment:
+      # This helps Vite's hot-reloading work better inside Docker on Windows
+      - CHOKIDAR_USEPOLLING=true
+    # Make sure the backend is ready before the frontend starts
+    depends_on:
+      - backend
