@@ -9,3 +9,9 @@ backend/dist/
 
 # Environment variables
 .env
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl

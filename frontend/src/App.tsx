@@ -5,12 +5,15 @@ import './App.css';
 function App() {
   const [message, setMessage] = useState('Loading...');
 
+  // If VITE_API_URL is set (like on Netlify), use it.
+  // Otherwise, default to '/api' (relative path for AWS/Docker).
+  const API_URL = import.meta.env.VITE_API_URL || '/api';
+
   useEffect(() => {
-    // This will request data from our backend API
-    fetch('/api')
+    fetch(API_URL)
       .then((res) => res.json())
       .then((data) => setMessage(data.message))
-      .catch(() => setMessage('Error: Could not connect to backend.'));
+      .catch((err) => setMessage(`Error: ${err.message}`));
   }, []);
 
   return (
