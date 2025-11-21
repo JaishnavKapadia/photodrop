@@ -11,6 +11,8 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 
+# Generate Client (Standard)
+# We still provide a dummy URL because Prisma needs to know *which* database engine to download
 RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npx prisma generate
 
 RUN npm run build
@@ -25,7 +27,6 @@ RUN apk add --no-cache openssl
 COPY --from=build /usr/src/app/dist ./dist
 COPY --from=build /usr/src/app/package*.json ./
 COPY --from=build /usr/src/app/prisma ./prisma 
-COPY --from=build /usr/src/app/prisma.config.ts ./
 
 RUN npm install --omit=dev
 
